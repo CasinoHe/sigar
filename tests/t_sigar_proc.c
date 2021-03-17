@@ -57,7 +57,8 @@
 TEST(test_sigar_proc_stat_get) {
 	sigar_proc_stat_t proc_stat;
 
-	assert(SIGAR_OK == sigar_proc_stat_get(t, &proc_stat));
+	int ret = sigar_proc_stat_get(t, &proc_stat);
+	assert(SIGAR_OK == ret);
 	assert(proc_stat.total > 0);
 
 	return 0;
@@ -67,7 +68,8 @@ TEST(test_sigar_proc_list_get) {
 	sigar_proc_list_t proclist;
 	size_t i;
 
-	assert(SIGAR_OK == sigar_proc_list_get(t, &proclist));
+	int ret = sigar_proc_list_get(t, &proclist);
+	assert(SIGAR_OK == ret);
 	assert(proclist.number > 0);
 
 	for (i = 0; i < proclist.number; i++) {
@@ -187,8 +189,9 @@ TEST(test_sigar_proc_list_get) {
 int main() {
 	sigar_t *t;
 	int err = 0;
-	
-	assert(SIGAR_OK == sigar_open(&t));
+
+	int ret = sigar_open(&t);
+	assert(SIGAR_OK == ret);
 
 	test_sigar_proc_stat_get(t);
 	test_sigar_proc_list_get(t);
