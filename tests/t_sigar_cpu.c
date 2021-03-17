@@ -135,7 +135,9 @@ int main() {
 	sigar_t *t;
 	int err = 0;
 	
-	assert(SIGAR_OK == sigar_open(&t));
+	int ret = sigar_open(&t);
+
+	assert(SIGAR_OK == ret);
 
 	test_sigar_cpu_get(t);
 	test_sigar_cpu_list_get(t);

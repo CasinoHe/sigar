@@ -87,8 +87,9 @@ TEST(test_sigar_net_connections_get) {
 int main() {
 	sigar_t *t;
 	int err = 0;
-	
-	assert(SIGAR_OK == sigar_open(&t));
+
+	int ret = sigar_open(&t);
+	assert(SIGAR_OK == ret);
 
 	test_sigar_net_connections_get(t);
 

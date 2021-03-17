@@ -53,7 +53,8 @@ TEST(test_sigar_file_system_list_get) {
 	sigar_file_system_list_t fslist;
 	size_t i;
 
-	assert(SIGAR_OK == sigar_file_system_list_get(t, &fslist));
+	int ret = sigar_file_system_list_get(t, &fslist);
+	assert(SIGAR_OK == ret);
 	assert(fslist.number > 0);
 
 	for (i = 0; i < fslist.number; i++) {
@@ -152,12 +153,13 @@ TEST(test_sigar_file_system_list_get) {
 int main() {
 	sigar_t *t;
 	int err = 0;
-	
-	assert(SIGAR_OK == sigar_open(&t));
+
+	int ret = sigar_open(&t);
+	assert(SIGAR_OK == ret);
 
 	test_sigar_file_system_list_get(t);
 
-	sigar_close(t);
+	// sigar_close(t);
 
 	return err ? -1 : 0;
 }
