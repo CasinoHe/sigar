@@ -1423,7 +1423,7 @@ sigar_getline_histadd(char *buf)
                   char line[BUFSIZ];
 
                   fp = fopen(gl_histfile, "r");
-                  tmpnam(tname);
+                  mkstemp(tname);
                   ftmp = fopen(tname, "w");
                   if (fp && ftmp) {
                      int nline = 0;

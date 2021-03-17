@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <sys/times.h>
 #include <sys/utsname.h>
+#include <sys/sysmacros.h>
 
 #include "sigar.h"
 #include "sigar_private.h"
@@ -603,7 +604,7 @@ int sigar_os_proc_list_get(sigar_t *sigar,
                            sigar_proc_list_t *proclist)
 {
     DIR *dirp = opendir(PROCP_FS_ROOT);
-    struct dirent *ent, dbuf;
+    struct dirent *ent;
     register const int threadbadhack = !sigar->has_nptl;
 
     if (!dirp) {
@@ -614,7 +615,7 @@ int sigar_os_proc_list_get(sigar_t *sigar,
         sigar->proc_signal_offset = get_proc_signal_offset();
     }
 
-    while (readdir_r(dirp, &dbuf, &ent) == 0) {
+    while ((ent = readdir(dirp))) {
         if (!ent) {
             break;
         }
@@ -1258,13 +1259,13 @@ static int get_iostat_proc_dstat(sigar_t *sigar,
     }
 
     while ((ptr = fgets(buffer, sizeof(buffer), fp))) {
-        unsigned long major, minor;
+        unsigned long major_ver, minor_ver;
 
-        major = sigar_strtoul(ptr);
-        minor = sigar_strtoul(ptr);
+        major_ver = sigar_strtoul(ptr);
+        minor_ver = sigar_strtoul(ptr);
 
-        if ((major == ST_MAJOR(sb)) &&
-            ((minor == ST_MINOR(sb)) || (minor == 0)))
+        if ((major_ver == ST_MAJOR(sb)) &&
+            ((minor_ver == ST_MINOR(sb)) || (minor_ver == 0)))
         {
             int num;
             unsigned long
@@ -1315,11 +1316,11 @@ static int get_iostat_proc_dstat(sigar_t *sigar,
             disk->read_bytes  *= 512;
             disk->write_bytes *= 512;
 
-            if (minor == ST_MINOR(sb)) {
+            if (minor_ver == ST_MINOR(sb)) {
                 status = SIGAR_OK;
                 break;
             }
-            else if (minor == 0) {
+            else if (minor_ver == 0) {
                 memcpy(device_usage, disk, sizeof(*device_usage));
             }
         }
@@ -1361,12 +1362,12 @@ static int get_iostat_procp(sigar_t *sigar,
 
     (void)fgets(buffer, sizeof(buffer), fp); /* skip header */
     while ((ptr = fgets(buffer, sizeof(buffer), fp))) {
-        unsigned long major, minor;
+        unsigned long major_ver, minor_ver;
 
-        major = sigar_strtoul(ptr);
-        minor = sigar_strtoul(ptr);
+        major_ver = sigar_strtoul(ptr);
+        minor_ver = sigar_strtoul(ptr);
 
-        if ((major == ST_MAJOR(sb)) && (minor == ST_MINOR(sb))) {
+        if ((major_ver == ST_MAJOR(sb)) && (minor_ver == ST_MINOR(sb))) {
             ptr = sigar_skip_token(ptr); /* blocks */
             ptr = sigar_skip_token(ptr); /* name */
             disk->reads = sigar_strtoull(ptr); /* rio */
@@ -2482,7 +2483,7 @@ int sigar_proc_port_get(sigar_t *sigar, int protocol,
     int status;
     sigar_net_connection_t netconn;
     DIR *dirp;
-    struct dirent *ent, dbuf;
+    struct dirent *ent;
 
     SIGAR_ZERO(&netconn);
     *pid = 0;
@@ -2502,7 +2503,7 @@ int sigar_proc_port_get(sigar_t *sigar, int protocol,
         return errno;
     }
 
-    while (readdir_r(dirp, &dbuf, &ent) == 0) {
+    while ((ent = readdir(dirp))) {
         DIR *fd_dirp;
         struct dirent *fd_ent, fd_dbuf;
         struct stat sb;
@@ -2543,7 +2544,7 @@ int sigar_proc_port_get(sigar_t *sigar, int protocol,
             continue;
         }
 
-        while (readdir_r(fd_dirp, &fd_dbuf, &fd_ent) == 0) {
+        while ((fd_ent = readdir(fd_dirp))) {
             char fd_ent_name[BUFSIZ];
 
             if (fd_ent == NULL) {

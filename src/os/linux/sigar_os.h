@@ -74,7 +74,7 @@ struct sigar_t {
 /* use gnu version of strerror_r */
 #define HAVE_STRERROR_R_GLIBC
 #endif
-#define HAVE_READDIR_R
+#undef HAVE_READDIR_R
 #define HAVE_GETPWNAM_R
 #define HAVE_GETPWUID_R
 #define HAVE_GETGRGID_R
