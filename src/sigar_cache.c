@@ -69,7 +69,7 @@ void sigar_cache_dump(sigar_cache_t *table)
 
         printf("|");
         while (entry) {
-            printf("%lld", entry->id);
+            printf("%lu", entry->id);
             if (entry->next) {
                 printf(",");
             }
